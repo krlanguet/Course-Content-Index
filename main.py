@@ -23,10 +23,8 @@ def init():
     with open('courses.json', 'r+') as data_file:
         course_list = loads(data_file.read())
 
-    '''
     for i, entry in enumerate(course_list):
         course_list[i] = course(entry)
-    '''
 
     return course_list
 
@@ -37,18 +35,19 @@ def shutdown():
     with open('courses.json', 'w+') as data_file:
         data_file.write('[\n')
         l = len(course_list)
-        for i,course in enumerate(course_list):
-            data_file.write(dumps(course, indent=4))
+        for i, course in enumerate(course_list):
+            data_file.write(dumps(course.__dict__, indent=4))
             if (i + 1) < l:
-                data_file.write(',')
+                data_file.write(',\n')
         data_file.write('\n]')
 
 
 class course:
-    def __init__(self, name='un-named'):
-        self.name = name
-        self.descriptions = []
-        self.resources = {}
+    def __init__(self, dict_from_json):
+        d = dict_from_json
+        self.name = d["name"]
+        self.descriptions = d["descriptions"]
+        #self.resources = {}
 
 
 @click.command()
