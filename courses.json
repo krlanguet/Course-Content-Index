@@ -1,54 +1,9 @@
 [
 {
     "name": "EECS 212",
-    "descriptions": [
-        {
-            "text": "A bleh course",
-            "source": "Personal experience."
-        }
+    "descriptions": [],
+    "resources": [
+        "Lecture slides"
     ]
-},
-{
-    "name": "EECS 212",
-    "descriptions": [
-        {
-            "text": "A bleh course",
-            "source": "Personal experience."
-        }
-    ]
-},
-{
-    "name": "cat",
-    "descriptions": [
-        {
-            "text": "dog",
-            "source": "bear"
-        },
-        {
-            "text": "dear",
-            "source": "horse"
-        }
-    ]
-},
-{
-    "name": "cat",
-    "descriptions": [
-        {
-            "text": "dog",
-            "source": "bear"
-        },
-        {
-            "text": "dear",
-            "source": "horse"
-        }
-    ]
-},
-{
-    "name": "EECS 349",
-    "descriptions": []
-},
-{
-    "name": "EECS 348",
-    "descriptions": []
 }
 ]
