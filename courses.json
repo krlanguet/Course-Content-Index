@@ -42,5 +42,13 @@
             "source": "horse"
         }
     ]
+},
+{
+    "name": "EECS 349",
+    "descriptions": []
+},
+{
+    "name": "EECS 348",
+    "descriptions": []
 }
 ]
