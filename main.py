@@ -1,46 +1,58 @@
 
+
+# Execution time
+from time import time
+
 # For running with command line
 import click
 
 # For database storage
-from json import loads, dumps
+#from json import loads, dumps
+from sqlite3 import connect
 
 # For backing-up previous outputs
 from os.path import isfile
-from time import strftime as time
+from time import strftime
 from shutil import copy
 
 
 # Function for opening the database and preparing for any commands
 def init():
-    t = time('%H:%M:%S') # Local time in 24Hour, minute, seconds
+    '''
+    t = strftime('%H:%M:%S') # Local time in 24Hour, minute, seconds
 
     # Backup previous data output
     if isfile('courses.json'):
         copy('courses.json', 'data_backup/' + t + '.json')
+    '''
 
-    # Copies entire contents of file into string
-    with open('courses.json', 'r+') as data_file:
-        course_list = loads(data_file.read())
-        # Potential bug here !! need to create empty list if there is no file!
+    connection = connect("courses.db")
 
-    for i, entry in enumerate(course_list):
-        course_list[i] = course(dict_from_json = entry)
+    cursor = connection.cursor()
 
-    return course_list
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS courses(
+            course_id INTEGER PRIMARY KEY,
+            name TEXT
+        );
+    """)
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS descriptions(
+            descr_id INTEGER PRIMARY KEY,
+            course_id INT,
+            text TEXT,
+            source TEXT
+        );
+    """)
+
+    return [connection, cursor]
 
 
 # Function for saving to the databse and exiting after all commands are finished
-def shutdown(course_list):
-    # Dumps potentially modified string back into file
-    with open('courses.json', 'w+') as data_file:
-        data_file.write('[\n')
-        l = len(course_list)
-        for i, course in enumerate(course_list):
-            data_file.write(dumps(course.__dict__, indent=4))
-            if (i + 1) < l:
-                data_file.write(',\n')
-        data_file.write('\n]')
+def shutdown(connection):
+    connection.commit()
+    connection.close()
 
 
 class course:
@@ -59,14 +71,17 @@ class course:
 @click.argument('name')
 @click.option('--description', '-d', type=(str, str), default=(), help='Course description and source', multiple=True)
 def new_course(name, description):
-    course_list = init()
+    start_time = time()
 
+    con, curs = init()
+
+    curs.execute("INSERT INTO courses (name) VALUES ('{}')".format(name))
+    course_id = curs.lastrowid
+    
     # Multiple descriptions creates a single description tuple containing multiple inputs tuples
-    descriptions = []
     for d in description:
-        descriptions.append({'text': d[0], 'source': d[1]})
+        curs.execute("INSERT INTO descriptions (course_id, text, source) VALUES ({}, '{}', '{}')".format(course_id, d[0], d[1]))
 
 
-    course_list.append(course(name=name, descriptions=descriptions))
-
-    shutdown(course_list)
+    shutdown(con)
+    print("Total time: {} seconds".format(time() - start_time))
