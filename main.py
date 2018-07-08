@@ -1,4 +1,7 @@
 
+# Execution time
+from time import time
+
 # For running with command line
 import click
 
@@ -7,13 +10,13 @@ from json import loads, dumps
 
 # For backing-up previous outputs
 from os.path import isfile
-from time import strftime as time
+from time import strftime
 from shutil import copy
 
 
 # Function for opening the database and preparing for any commands
 def init():
-    t = time('%H:%M:%S') # Local time in 24Hour, minute, seconds
+    t = strftime('%H:%M:%S') # Local time in 24Hour, minute, seconds
 
     # Backup previous data output
     if isfile('courses.json'):
@@ -59,6 +62,8 @@ class course:
 @click.argument('name')
 @click.option('--description', '-d', type=(str, str), default=(), help='Course description and source', multiple=True)
 def new_course(name, description):
+    start_time = time()
+
     course_list = init()
 
     # Multiple descriptions creates a single description tuple containing multiple inputs tuples
@@ -70,3 +75,4 @@ def new_course(name, description):
     course_list.append(course(name=name, descriptions=descriptions))
 
     shutdown(course_list)
+    print("Total time: {} seconds".format(time() - start_time))
